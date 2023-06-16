@@ -79,6 +79,13 @@ api.add_resource(UserResource, '/users')
 api.add_resource(UserRegistrationResource, '/register')
 api.add_resource(UserLoginResource, '/login')
 
+class TradeResource(Resource):
+    pass
+
+api.add_resource(TradeResource, '/trade')
+
+
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
