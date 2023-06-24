@@ -9,18 +9,16 @@ import Watchlist from "./components/Watchlist";
 import OverallPerformance from "./components/OverallPerformance";
 import Site from "./components/Site";
 import Note from "./components/Note";
-import './App.css'
-
+import './App.css';
 
 function App() {
-
   return (
     <div>
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/register" component={Register} />
         <Route path="/login" component={Login} />
-        <Route path="/user" component={User} />
+        <Route path="/users/:userId" component={User} />
         <Route path="/trade" component={Trade} />
         <Route path="/watchlist" component={Watchlist} />
         <Route path="/overallperformance" component={OverallPerformance} />
@@ -30,5 +28,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
