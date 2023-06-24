@@ -89,16 +89,23 @@ api.add_resource(UserResource, '/users')
 api.add_resource(UserRegistrationResource, '/register')
 api.add_resource(UserLoginResource, '/login')
 
+
 class TradeResource(Resource):
-    def get(self, trade_id):
+    def get(self, trade_id=None):
+        if trade_id is None:
+            return self.get_all_trades()
+        else: 
+            return self.get_trade(trade_id)
+        
+    def get_trade(self, trade_id):
         trade = Trade.query.get(trade_id)
-        if trade_id:
+        if trade:
             return trade.to_dict()
         return {'message': 'Trade not found'}, 404
-    
+
     def put(self, trade_id):
-        print ('PUT request received for trade ID', trade_id)
-        trade= Trade.query.get(trade_id)
+        print('PUT request received for trade ID', trade_id)
+        trade = Trade.query.get(trade_id)
         if trade:
             data = request.get_json()
             trade.date = data['date']
@@ -114,7 +121,7 @@ class TradeResource(Resource):
             db.session.commit()
             return {'message': 'Trade updated successfully'}
         return {'message': 'Trade not found'}, 404
-    
+
     def delete(self, trade_id):
         trade = Trade.query.get(trade_id)
         if trade:
@@ -122,7 +129,7 @@ class TradeResource(Resource):
             db.session.commit()
             return {'message': 'Trade deleted successfully'}
         return {'message': 'Trade not found'}, 404
-    
+
     def get_all_trades(self):
         trades = Trade.query.all()
         return [trade.to_dict() for trade in trades]
