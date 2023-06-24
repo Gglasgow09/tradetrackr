@@ -1,4 +1,6 @@
 from sqlalchemy_serializer import SerializerMixin
+# from datetime import datetime
+from enum import Enum
 
 from config import db
 
@@ -29,7 +31,7 @@ class User(db.Model):
     performances = db.relationship(
         "OverallPerformance", backref="user", lazy=True)
     sites = db.relationship("Site", backref="user", lazy=True)
-    notes = db.relationship("Note", backref="user", lazy=True)
+    author_notes = db.relationship("Note", backref="author", lazy=True)
 
 
 # Trade Model
@@ -54,9 +56,9 @@ class Trade(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "date": self.date,
-            "entry_time": self.entry_time,
-            "exit_time": self.exit_time,
+            "date": self.date.isoformat(),
+            "entry_time": self.entry_time.isoformat(),
+            "exit_time": self.exit_time.isoformat(),
             "symbol": self.symbol,
             "long_short": self.long_short,
             "quantity": self.quantity,
@@ -111,7 +113,7 @@ class OverallPerformance(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "date": self.date,
+            "date": self.date.isoformat(),
             "portfolio_value": self.portfolio_value,
             "pnl": self.pnl,
             "roi": self.roi,
@@ -151,6 +153,12 @@ class WatchlistItem(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "symbol": self.symbol,
+        }
+
     # Relationships
     watchlist_id = db.Column(db.Integer, db.ForeignKey(
         "watchlists.id"), nullable=False)
@@ -165,8 +173,42 @@ class Note(db.Model):
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "content": self.content,
+        }
+
     # Relationships
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+
+# restricts the choices od the user using enum
+class Sector(Enum):
+    HEALTHCARE = 'healthcare'
+    MATERIALS = 'materials'
+    REAL_ESTATE = 'real estate'
+    CONSUMER_STAPLES = 'consumer staples'
+    CONSUMER_DISCRETIONARY = 'consumer discretionary'
+    UTILITIES = 'utilities'
+    ENERGY = 'energy'
+    INDUSTRIALS = 'industrials'
+    CONSUMER_SERVICES = 'consumer services'
+    FINANCIALS = 'financials'
+    TECHNOLOGY = 'technology'
+
+class RiskLevel(Enum):
+    LOW = 'low'
+    MID = 'mid'
+    HIGH = 'high'
+
+class TradeDuration(Enum):
+    SHORT = 'short'
+    LONG = 'long'
+
+class TradeOutcome(Enum):
+    WIN = 'win'
+    LOSS = 'loss'
 
 
 # Tag Model
@@ -174,9 +216,23 @@ class Tag(db.Model):
     __tablename__ = 'tags'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    sector = db.Column(db.String(50))
+    risk_level = db.Column(db.String(20))
+    trade_duration = db.Column(db.String(20))
+    trade_outcome = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "sector": self.sector,
+            "risk_level": self.risk_level,
+            "trade_duration": self.trade_duration,
+            "trade_outcome": self.trade_outcome
+        }
 
     # Relationships
     trades = db.relationship("TradeTag", backref="tag", lazy=True)
@@ -189,6 +245,11 @@ class TradeTag(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+        }
 
     # Relationships
     trade_id = db.Column(db.Integer, db.ForeignKey(
