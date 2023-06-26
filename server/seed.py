@@ -22,6 +22,7 @@ if __name__ == '__main__':
         print("Starting seed...")
 
         # Create 5 users
+        users = []
         for _ in range(5):
             username = fake.user_name()
             password = fake.password(length=10)
@@ -32,6 +33,7 @@ if __name__ == '__main__':
 
             # Add the user to the database session
             db.session.add(user)
+            users.append(user)
 
             # Create trades for each user
             for _ in range(5):  # Create 5 trades per user
@@ -40,29 +42,14 @@ if __name__ == '__main__':
                 exit_time = fake.time_object()
 
                 symbol = fake.random_element(
-                    elements=('AAPL', 'GOOGL', 'TSLA', 'MSFT'))
+                elements=('AAPL', 'GOOGL', 'TSLA', 'MSFT'))
                 long_short = fake.random_element(
-                    elements=('Long', 'Short'))
+                elements=('Long', 'Short'))
                 quantity = fake.random_int(min=1, max=100)
                 entry_price = uniform(50, 200)
                 exit_price = uniform(50, 200)
                 pnl = uniform(-200, 200)
                 notes = fake.sentence()
-
-            # Create watchlists
-            for _ in range(5):
-                name = fake.word()
-                user = User.query.order_by(func.random()).first()
-            # Create a Watchlist instance with the generated data
-                watchlist = Watchlist(name=name, user=user)
-            # Add the watchlist to the database session
-                db.session.add(watchlist)
-            # Generate ticker symbols for the watchlist items
-                ticker_symbols = [fake.random_element(elements=('AAPL', 'GOOGL', 'TSLA', 'MSFT')) for _ in range(5)]
-            # Create watchlist items for the watchlist
-            for ticker_symbol in ticker_symbols:
-                watchlist_item = WatchlistItem(symbol=ticker_symbol, watchlist=watchlist)
-                db.session.add(watchlist_item)
 
                 # Create a Trade instance with the generated data and assign it to the user
                 trade = Trade(date=date, entry_time=entry_time, exit_time=exit_time, symbol=symbol,
@@ -76,10 +63,10 @@ if __name__ == '__main__':
                 tags = []
                 for _ in range(randint(1, 3)):
                     tag = Tag(name=fake.word(),
-                              sector=rc(SECTORS),
-                              risk_level=rc(RISK_LEVELS),
-                              trade_duration=rc(TRADE_DURATIONS),
-                              trade_outcome=rc(TRADE_OUTCOMES))
+                            sector=rc(SECTORS),
+                            risk_level=rc(RISK_LEVELS),
+                            trade_duration=rc(TRADE_DURATIONS),
+                            trade_outcome=rc(TRADE_OUTCOMES))
                     db.session.add(tag)
                     tags.append(tag)
 
@@ -87,38 +74,21 @@ if __name__ == '__main__':
                 for tag in tags:
                     trade_tag = TradeTag(trade=trade, tag=tag)
                     db.session.add(trade_tag)
-                
-        # Retrieve all trades and users from the database
-        trades = Trade.query.all()
-        users = User.query.all()
 
-        # Create notes for each trade and assign a random user
-        for trade in trades:
-            for _ in range(randint(1, 3)):
-                content = fake.sentence()
-                user = rc(users)  # Choose a random user
-                note = Note(content=content, user=user, trade=trade)
-                db.session.add(note)
-                
-            # Create a Performance instance for each user
-            portfolio_value = randint(10000, 1000000)
-            pnl = uniform(-2000, 2000)
-            roi = uniform(-10, 10)
-            win_rate = uniform(0, 100)
-            max_drawdown = uniform(0, 100)
-            trade_duration = randint(1, 100)
+        # Create fake watchlists
+        for user in users:
+            for _ in range(5):
+                name = fake.word()
+                watchlist = Watchlist(name=name, user=user)
+                db.session.add(watchlist)
 
-            # Convert the fake.date() value to Python date object
-            date = datetime.strptime(fake.date(), "%Y-%m-%d").date()
-
-            # Create a Performance instance with the generated data and assign it to the user
-            overallperformance = OverallPerformance(date=date, portfolio_value=portfolio_value,
-                                                    pnl=pnl, roi=roi, win_rate=win_rate,
-                                                    max_drawdown=max_drawdown, trade_duration=trade_duration,
-                                                    user=user)
-
-            # Add the performance to the database session
-            db.session.add(overallperformance)
+        # Create fake sites
+        sites = []
+        for _ in range(5):
+            user = rc(users)  # Choose a random user
+            site = Site(url=fake.url(), user=user)
+        db.session.add(site)
+        sites.append(site)
 
         # Commit the changes to the database
         db.session.commit()

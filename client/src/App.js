@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Switch, Route } from "react-router-dom";
 import Home from "./components/Home";
 import Register from "./components/Register";
@@ -19,7 +19,7 @@ function App() {
         <Route path="/register" component={Register} />
         <Route path="/login" component={Login} />
         <Route path="/users/:userId" component={User} />
-        <Route path="/trade" component={Trade} />
+        <Route path="/trade/users/:userId" component={Trade} />
         <Route path="/watchlist" component={Watchlist} />
         <Route path="/overallperformance" component={OverallPerformance} />
         <Route path="/site" component={Site} />

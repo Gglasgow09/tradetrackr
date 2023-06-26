@@ -6,6 +6,7 @@
 from flask import request, session
 from flask_restful import Resource
 
+
 # Local imports
 from config import app, db, api
 from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistItem, Note, Tag, TradeTag
@@ -91,17 +92,25 @@ api.add_resource(UserLoginResource, '/login')
 
 
 class TradeResource(Resource):
-    def get(self, trade_id=None):
-        if trade_id is None:
+    def get(self, trade_id=None, user_id=None):  
+        if trade_id is None and user_id is None:
             return self.get_all_trades()
-        else: 
+        elif trade_id is not None:
             return self.get_trade(trade_id)
+        elif user_id is not None:
+            return self.get_user_trades(user_id)
+
         
     def get_trade(self, trade_id):
         trade = Trade.query.get(trade_id)
         if trade:
             return trade.to_dict()
         return {'message': 'Trade not found'}, 404
+    
+    def get_user_trades(self, user_id):
+        trades = Trade.query.filter_by(user_id=user_id).all()
+        return [trade.to_dict() for trade in trades]
+
 
     def put(self, trade_id):
         print('PUT request received for trade ID', trade_id)
@@ -133,9 +142,8 @@ class TradeResource(Resource):
     def get_all_trades(self):
         trades = Trade.query.all()
         return [trade.to_dict() for trade in trades]
-
-api.add_resource(TradeResource, '/trade/<int:trade_id>')
-api.add_resource(TradeResource, '/trade', endpoint='all_trades')
+    
+api.add_resource(TradeResource, '/trade', '/trade/<int:trade_id>', '/trade/users/<int:user_id>', endpoint='trade')
 
 class WatchlistId(Resource):
     def get(self, watchlist_id):
@@ -161,7 +169,6 @@ class WatchlistId(Resource):
             return {'message': 'Watchlist deleted successfully'}
         return {'message': 'Watchlist not found'}, 404
 
-api.add_resource(WatchlistId, '/watchlist/<int:watchlist_id>')
 
 class Watchlist(Resource):
     def get(self):
@@ -175,7 +182,67 @@ class Watchlist(Resource):
         db.session.commit()
         return {'message': 'Watchlist created successfully'}, 201
 
+    def get_user_watchlist(self, user_id):
+        watchlists = Watchlist.query.filter_by(user_id=user_id).all()
+        return [watchlist.to_dict() for watchlist in watchlists]
+
+
+api.add_resource(WatchlistId, '/watchlist/<int:watchlist_id>')
 api.add_resource(Watchlist, '/watchlist')
+api.add_resource(Watchlist, '/user/<int:user_id>/watchlist', endpoint='user_watchlist')
+
+class UserWatchlists(Resource):
+    def get(self, user_id):
+        user = User.query.get(user_id)
+        if user:
+            watchlists = user.watchlists.all()
+            return [watchlist.to_dict() for watchlist in watchlists]
+        return {'message': 'User not found'}, 404
+
+api.add_resource(UserWatchlists, '/user/<int:user_id>/watchlists')
+
+class WatchlistResource(Resource):
+    def get(self, watchlist_id=None):
+        if watchlist_id is None:
+            return self.get_all_watchlists()
+        else:
+            return self.get_watchlist(watchlist_id)
+
+    def get_watchlist(self, watchlist_id):
+        watchlist = Watchlist.query.get(watchlist_id)
+        if watchlist:
+            return watchlist.to_dict()
+        return {'message': 'Watchlist not found'}, 404
+
+    def get_all_watchlists(self):
+        watchlists = Watchlist.query.all()
+        return [watchlist.to_dict() for watchlist in watchlists]
+
+    def post(self):
+        data = request.get_json()
+        watchlist = Watchlist(name=data["name"])
+        db.session.add(watchlist)
+        db.session.commit()
+        return {'message': 'Watchlist created successfully'}, 201
+
+    def put(self, watchlist_id):
+        watchlist = Watchlist.query.get(watchlist_id)
+        if watchlist:
+            data = request.get_json()
+            watchlist.name = data['name']
+            db.session.commit()
+            return {'message': 'Watchlist updated successfully'}
+        return {'message': 'Watchlist not found'}, 404
+
+    def delete(self, watchlist_id):
+        watchlist = Watchlist.query.get(watchlist_id)
+        if watchlist:
+            db.session.delete(watchlist)
+            db.session.commit()
+            return {'message': 'Watchlist deleted successfully'}
+        return {'message': 'Watchlist not found'}, 404
+
+api.add_resource(WatchlistResource, '/watchlist', '/watchlist/<int:watchlist_id>')
 
 class OverallPerformance(Resource):
     def get(self, performance_id):
@@ -231,34 +298,6 @@ class SiteResource(Resource):
         return {'message': 'Site not found'}, 404
     
 api.add_resource(SiteResource, '/site/<int:site_id>') 
-
-class WatchlistItemResource(Resource):
-    def get(self, item_id):
-        item = WatchlistItem.query.get(item_id)
-        if item:
-            return item.to_dict()
-        return {'message': 'Watchlist item not found'}, 404
-    
-    def put(self, item_id):
-        item = WatchlistItem.query.get(item_id)
-        if item:
-            data = request.get_json()
-            item.watchlist_id = data['watchlist_id']
-            item.symbol = data['symbol']
-            item.notes = data['notes']
-            db.session.commit()
-            return {'message': 'Watchlist item updated successfully'}
-        return {'message': 'Watchlist item not found'}, 404
-    
-    def delete(self, item_id):
-        item = WatchlistItem.query.get(item_id)
-        if item:
-            db.session.delete(item)
-            db.session.commit()
-            return {'message': 'Watchlist item deleted successfully'}
-        return {'message': 'Watchlist item not found'}, 404
-
-api.add_resource(WatchlistItemResource, '/watchlistitem/<int:item_id>')
 
 class NoteResource(Resource):
     def get(self, note_id):

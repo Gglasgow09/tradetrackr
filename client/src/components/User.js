@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
 const User = () => {
-    const { userId } = useParams(); // Retrieve the user ID from the route parameter
-
+    // Retrieve the user ID from the route parameter
+    const { userId } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -41,7 +41,7 @@ const User = () => {
                         <Link to="/watchlist">Watchlist</Link>
                     </li>
                     <li>
-                        <Link to="/trade">Trade</Link>
+                        <Link to={`/trade/users/${userId}`}>Trade Journal</Link>
                     </li>
                     <li>
                         <Link to="/site">Site</Link>

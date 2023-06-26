@@ -95,6 +95,25 @@ class Watchlist(db.Model):
     symbols = db.relationship("WatchlistItem", backref="watchlist", lazy=True)
 
 
+# WatchlistItem Model
+class WatchlistItem(db.Model):
+    __tablename__ = 'watchlist_items'
+    id = db.Column(db.Integer, primary_key=True)
+    symbol = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
+    ), onupdate=db.func.current_timestamp())
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "symbol": self.symbol,
+        }
+
+    # Relationships
+    watchlist_id = db.Column(db.Integer, db.ForeignKey(
+        "watchlists.id"), nullable=False)
+
 # Performance Model
 class OverallPerformance(db.Model):
     __tablename__ = "overall_performances"
@@ -144,24 +163,6 @@ class Site(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
 
-# WatchlistItem Model
-class WatchlistItem(db.Model):
-    __tablename__ = 'watchlist_items'
-    id = db.Column(db.Integer, primary_key=True)
-    symbol = db.Column(db.String(50), nullable=False)
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
-    ), onupdate=db.func.current_timestamp())
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "symbol": self.symbol,
-        }
-
-    # Relationships
-    watchlist_id = db.Column(db.Integer, db.ForeignKey(
-        "watchlists.id"), nullable=False)
 
 
 # Note Model
