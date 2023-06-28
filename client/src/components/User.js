@@ -47,7 +47,7 @@ const User = () => {
                         <Link to="/site">Site</Link>
                     </li>
                     <li>
-                        <Link to="/performance">Overall Performance</Link>
+                        <Link to={`/performance/users/${userId}`}>Overall Performance</Link>
                     </li>
                     <li>
                         <button onClick={handleLogout}>Logout</button>

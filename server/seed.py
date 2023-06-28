@@ -46,9 +46,10 @@ if __name__ == '__main__':
                 long_short = fake.random_element(
                 elements=('Long', 'Short'))
                 quantity = fake.random_int(min=1, max=100)
-                entry_price = uniform(50, 200)
-                exit_price = uniform(50, 200)
-                pnl = uniform(-200, 200)
+                # rounds to two decimal places
+                entry_price = round(uniform(50, 200),2) 
+                exit_price = round(uniform(50, 200),2)
+                pnl = round(uniform(-200, 200),2)
                 notes = fake.sentence()
 
                 # Create a Trade instance with the generated data and assign it to the user
@@ -87,8 +88,8 @@ if __name__ == '__main__':
         for _ in range(5):
             user = rc(users)  # Choose a random user
             site = Site(url=fake.url(), user=user)
-        db.session.add(site)
-        sites.append(site)
+            db.session.add(site)
+            sites.append(site)
 
         # Commit the changes to the database
         db.session.commit()

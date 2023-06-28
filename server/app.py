@@ -5,6 +5,8 @@
 # Remote library imports
 from flask import request, session
 from flask_restful import Resource
+from datetime import datetime, time
+
 
 
 # Local imports
@@ -114,6 +116,7 @@ class TradeResource(Resource):
 
     def put(self, trade_id):
         print('PUT request received for trade ID', trade_id)
+
         trade = Trade.query.get(trade_id)
         if trade:
             data = request.get_json()
@@ -130,6 +133,63 @@ class TradeResource(Resource):
             db.session.commit()
             return {'message': 'Trade updated successfully'}
         return {'message': 'Trade not found'}, 404
+    
+    def patch(self, trade_id):
+        trade = Trade.query.get(trade_id)
+        if trade:
+            data = request.get_json()
+            if 'date' in data:
+                trade.date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+            if 'entry_time' in data:
+                trade.entry_time = datetime.strptime(data['entry_time'], '%H:%M:%S').time()
+            if 'exit_time' in data:
+                trade.exit_time = datetime.strptime(data['exit_time'], '%H:%M:%S').time()
+            if 'symbol' in data:
+                trade.symbol = data['symbol']
+            if 'long_short' in data:
+                trade.long_short = data['long_short']
+            if 'quantity' in data:
+                trade.quantity = data['quantity']
+            if 'entry_price' in data:
+                trade.entry_price = data['entry_price']
+            if 'exit_price' in data:
+                trade.exit_price = data['exit_price']
+            if 'pnl' in data:
+                trade.pnl = data['pnl']
+            if 'notes' in data:
+                trade.notes = data['notes']
+            db.session.commit()
+            return {'message': 'Trade updated successfully'}
+        return {'message': 'Trade not found'}, 404
+    
+    @staticmethod
+    def post(user_id):
+        # Ensure the user is authenticated
+        if not user_id:  # Replace this condition with your authentication logic
+            return {'message': 'Unauthorized user'}, 401
+
+        data = request.get_json()
+        trade_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
+        entry_time = datetime.strptime(data['entry_time'], '%H:%M:%S').time()
+        exit_time = datetime.strptime(data['exit_time'], '%H:%M:%S').time()
+
+
+        new_trade = Trade(
+            user_id=user_id,
+            date=trade_date,
+            entry_time=entry_time,
+            exit_time=exit_time,
+            symbol=data['symbol'],
+            long_short=data['long_short'],
+            quantity=data['quantity'],
+            entry_price=data['entry_price'],
+            exit_price=data['exit_price'],
+            pnl=data['pnl'],
+            notes=data['notes'],
+        )
+        db.session.add(new_trade)
+        db.session.commit()
+        return {'message': 'Trade created successfully'}, 201
 
     def delete(self, trade_id):
         trade = Trade.query.get(trade_id)
