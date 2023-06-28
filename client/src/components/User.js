@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
-const User = () => {
-    // Retrieve the user ID from the route parameter
+const User = ({ onLogout }) => {
     const { userId } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        console.log(userId);
-        fetch(`/users/${userId}`) // Use the retrieved user ID in the API request
+        fetch(`/users/${userId}`)
             .then((response) => response.json())
             .then((data) => {
                 setUser(data);
@@ -22,11 +20,9 @@ const User = () => {
     }, [userId]);
 
     const handleLogout = () => {
-        // Implement the logout functionality here
-        // You can clear any user-related data or perform any necessary cleanup
-
-        // For example, you can redirect the user to the login page after logout
-        // window.location.href = "/login";
+        fetch("/logout", {
+            method: "DELETE",
+        }).then(() => onLogout());
     };
 
     if (loading) {
@@ -59,7 +55,7 @@ const User = () => {
                     <h2>Welcome {user.username}</h2>
                     <p>Username: {user.username}</p>
                     <p>Email: {user.email}</p>
-                    <p>Hello, {user.username}!</p> {/* Print "Hello, user" with the user's username */}
+                    <p>Hello, {user.username}!</p>
                 </div>
             ) : (
                 <div>User not found.</div>

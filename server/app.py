@@ -5,13 +5,15 @@
 # Remote library imports
 from flask import request, session
 from flask_restful import Resource
-from datetime import datetime, time
-
+from datetime import datetime
+# from flask_bcrypt import Bcrypt
 
 
 # Local imports
 from config import app, db, api
 from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistItem, Note, Tag, TradeTag
+
+# bcrypt = Brypt(app)
 
 class UserIdResource(Resource):
     def get(self, user_id):
@@ -113,27 +115,6 @@ class TradeResource(Resource):
         trades = Trade.query.filter_by(user_id=user_id).all()
         return [trade.to_dict() for trade in trades]
 
-
-    def put(self, trade_id):
-        print('PUT request received for trade ID', trade_id)
-
-        trade = Trade.query.get(trade_id)
-        if trade:
-            data = request.get_json()
-            trade.date = data['date']
-            trade.entry_time = data['entry_time']
-            trade.exit_time = data['exit_time']
-            trade.symbol = data['symbol']
-            trade.long_short = data['long_short']
-            trade.quantity = data['quantity']
-            trade.entry_price = data['entry_price']
-            trade.exit_price = data['exit_price']
-            trade.pnl = data['pnl']
-            trade.notes = data['notes']
-            db.session.commit()
-            return {'message': 'Trade updated successfully'}
-        return {'message': 'Trade not found'}, 404
-    
     def patch(self, trade_id):
         trade = Trade.query.get(trade_id)
         if trade:
@@ -172,7 +153,6 @@ class TradeResource(Resource):
         trade_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
         entry_time = datetime.strptime(data['entry_time'], '%H:%M:%S').time()
         exit_time = datetime.strptime(data['exit_time'], '%H:%M:%S').time()
-
 
         new_trade = Trade(
             user_id=user_id,
