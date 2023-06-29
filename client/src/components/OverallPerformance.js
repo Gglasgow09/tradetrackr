@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 function OverallPerformance() {
     const [trades, setTrades] = useState([]);
@@ -75,6 +75,22 @@ function OverallPerformance() {
 
     return (
         <div>
+            <nav>
+                <ul>
+                    {/* <li>
+                        <Link to="/watchlist">Watchlist</Link>
+                    </li> */}
+                    <li>
+                        <Link to={`/trade/users/${userId}`}>Trade Journal</Link>
+                    </li>
+                    <li>
+                        <Link to="/site">Site</Link>
+                    </li>
+                    <li>
+                        <Link to="/performance">Overall Performance</Link>
+                    </li>
+                </ul>
+            </nav>
             <h1>Overall Performance</h1>
             <p>Portfolio Value: ${portfolioValue.toFixed(2)}</p>
             <p>P&L: ${pnl.toFixed(2)}</p>

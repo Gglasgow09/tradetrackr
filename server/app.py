@@ -8,13 +8,12 @@ from flask_restful import Resource
 from datetime import datetime
 from flask import jsonify
 # from flask_bcrypt import Bcrypt
-
-
 # Local imports
 from config import app, db, api
 from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistItem, Note, Tag, TradeTag
 
-# bcrypt = Brypt(app)
+# instantiate Bcrypt with app instance
+# bcrypt = Bcrypt(app)
 
 class UserIdResource(Resource):
     def get(self, user_id):
@@ -76,8 +75,8 @@ class UserLoginResource(Resource):
 
         user = User.query.filter_by(
             username=username, password=password).first()
-
         if user:
+        # if user.authenticate(password):
             session['user_id'] = user.id
             return user.to_dict(), 200
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import './trade.css';
 
 function Trade() {
     const [trades, setTrades] = useState([]);
@@ -172,9 +173,9 @@ function Trade() {
         <div>
             <nav>
                 <ul>
-                    <li>
+                    {/* <li>
                         <Link to="/watchlist">Watchlist</Link>
-                    </li>
+                    </li> */}
                     <li>
                         <Link to={`/trade/users/${userId}`}>Trade Journal</Link>
                     </li>

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import './login.css';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -18,9 +19,8 @@ const Login = () => {
             const data = await response.json();
             if (response.ok) {
                 const userId = data.id; // get the userId from the response
-                console.log(userId) // Navigate to the correct route
+                onLogin(); // Call onLogin function to set the user as logged in
                 history.push(`/users/${userId}`);
-
             } else {
                 setError(data.message);
             }
@@ -29,30 +29,33 @@ const Login = () => {
         }
     };
 
-
     return (
-        <div>
-            <h2>Login</h2>
-            {error && <p className="error">{error}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Username:</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <button type="submit">Log in</button>
-            </form>
+        <div className="container">
+            <div className="form-container">
+                <h2>Login</h2>
+                {error && <p className="error">{error}</p>}
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="username">Username:</label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password">Password:</label>
+                        <input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <button type="submit">Log in</button>
+                </form>
+            </div>
         </div>
     );
 };

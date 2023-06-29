@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import './user.css';
 
 const User = ({ onLogout }) => {
     const { userId } = useParams();
@@ -30,8 +31,8 @@ const User = ({ onLogout }) => {
     }
 
     return (
-        <div>
-            <nav>
+        <div className="container">
+            <nav className="navbar">
                 <ul>
                     <li>
                         <Link to="/watchlist">Watchlist</Link>
@@ -51,11 +52,31 @@ const User = ({ onLogout }) => {
                 </ul>
             </nav>
             {user ? (
-                <div>
-                    <h2>Welcome {user.username}</h2>
-                    <p>Username: {user.username}</p>
-                    <p>Email: {user.email}</p>
-                    <p>Hello, {user.username}!</p>
+                <div className="content">
+                    <h1>It's a beautiful day to trade {user.username}</h1>
+                    <h2>Trading Rules to Keep in Mind</h2>
+                    <ul className='ul'>
+                        <li>Stick to Your Discipline</li>
+                        <li>Lose the Crowd</li>
+                        <li>Engage Your Trading Plan</li>
+                        <li>Don't Cut Corners</li>
+                        <li>Avoid the Obvious</li>
+                        <li>Don't Break Your Rules</li>
+                        <li>Avoid Market Gurus</li>
+                        <li>Use Your Intuition</li>
+                        <li>Don't Fall in Love</li>
+                        <li>Organize Your Personal life</li>
+                        <li>Don't Try to Get Even</li>
+                        <li>Watch for Warnings</li>
+                        <li>Tools Don't Think</li>
+                        <li>Use Your Head</li>
+                        <li>Forget the Holy Grail</li>
+                        <li>Ditch the Paycheck Mentality</li>
+                        <li>Don't Count Your Chickens</li>
+                        <li>Embrace Simplicity</li>
+                        <li>Make Peace With Losses</li>
+                        <li>Beware of Reinforcement</li>
+                    </ul>
                 </div>
             ) : (
                 <div>User not found.</div>

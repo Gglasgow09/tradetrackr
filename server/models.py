@@ -2,7 +2,10 @@ from sqlalchemy.orm import validates
 from enum import Enum
 from config import db
 # from sqlalchemy.ext.hybrid import hybrid_property
-# from app import bcrypt
+
+from config import db, bcrypt
+
+
 
 # Models go here!
 
@@ -10,24 +13,48 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), unique=True, nullable=False)
-    password = db.Column(db.String(10), nullable=False)
-    email = db.Column(db.String(50), unique=True, nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False)
+    password = db.Column(db.String, nullable=False)  # Updated property name
+    email = db.Column(db.String, unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(
-    ), onupdate=db.func.current_timestamp())
+    updated_at = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
-    @validates('email')
-    def validate_email(self, key, address):
-        if '@' not in address:
-            raise ValueError("Failed email validation")
-        return address
+    # def __repr__(self):
+    #     return f'User {self.username}, ID {self.id}'
+    
+    # validation_errors = []
+    # def get_validation_errors(self):
+    #     return list(set(self.validation_errors))
+    
+    # @validates('username')
+    # def validate_username(self, key, username):
+    #     if username:
+    #         if type(username) is str and len(username) in range (5, 16):
+    #             return username
+    #         else:
+    #             self.validation_errors.append('Username must be a string between 5 and 16 characters')
 
-    @validates('password')
-    def validate_password(self, key, password):
-        if not any(c.isupper() for c in password):
-            raise ValueError("Password must have at least one capital letter")
-        return password
+    # @validates('email')
+    # def validate_email(self, key, email):
+    #     if type (email) is str and email and '@' and '.' in email:
+    #         return email
+    #     else:
+    #         self.validation_errors.append('Email must be a string in valid email format')
+
+    # @hybrid_property
+    # def password (self):
+    #     return self.password
+    
+    # @password.setter
+    # def password (self, password):
+    #     if type(password) is str and len(password) in range (6,20):
+    #         password = bcrypt.generate_password(password.decode(('utf-8')))
+    #         self.password = password.decode('utf-8')
+    #     else: self.validation_errors.append('Password validation error')
+    
+    # def authenticate(self, password):
+    #     return bcrypt.check_password(self.password, password)   
+
 
     def to_dict(self):
         return {

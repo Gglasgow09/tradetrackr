@@ -29,11 +29,11 @@ function Home() {
                 </p>
 
                 <Link to="/register">
-                    <button class='btn'>Sign Up</button>
+                    <button className="btn">Sign Up</button>
                 </Link>
 
                 <Link to="/login">
-                    <button class='btn'>Login</button>
+                    <button className="btn">Login</button>
                 </Link>
             </div>
         </div>

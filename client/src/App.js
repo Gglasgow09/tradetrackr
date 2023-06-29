@@ -1,5 +1,5 @@
-import React from "react";
-import { Switch, Route } from "react-router-dom";
+import React, { useState } from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Login from "./components/Login";
@@ -12,13 +12,35 @@ import Note from "./components/Note";
 import './App.css';
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
   return (
     <div>
       <Switch>
         <Route exact path="/" component={Home} />
         <Route path="/register" component={Register} />
-        <Route path="/login" component={Login} />
-        <Route path="/users/:userId" component={User} />
+        <Route path="/login">
+          {isLoggedIn ? (
+            <Redirect to="/" />
+          ) : (
+            <Login onLogin={handleLogin} />
+          )}
+        </Route>
+        <Route path="/users/:userId">
+          {isLoggedIn ? (
+            <User onLogout={handleLogout} />
+          ) : (
+            <Redirect to="/" />
+          )}
+        </Route>
         <Route path="/trade/users/:userId" component={Trade} />
         <Route path="/watchlist" component={Watchlist} />
         <Route path="/overallperformance/users/:userId" component={OverallPerformance} />
@@ -28,6 +50,5 @@ function App() {
     </div>
   );
 }
-
 
 export default App;
