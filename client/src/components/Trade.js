@@ -7,7 +7,6 @@ function Trade() {
     const [selectedTrade, setSelectedTrade] = useState(null);
     // allows for access to 'userId' from url
     const { userId } = useParams();
-
     const [newTrade, setNewTrade] = useState({
         id: "", // Add trade ID property
         date: "",
@@ -21,16 +20,31 @@ function Trade() {
         pnl: 0,
         notes: "",
     });
+    const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order is ascending
+
     // fetches trades from server when either the userId or trade state changes
     useEffect(() => {
         const fetchTrades = () => {
             fetch(`/trade/users/${userId}`)
                 .then((response) => response.json())
-                .then((data) => setTrades(data))
+                .then((data) => {
+                    const sortedTrades = data.sort((a, b) => {
+                        if (sortOrder === "asc") {
+                            return new Date(a.date) - new Date(b.date);
+                        } else {
+                            return new Date(b.date) - new Date(a.date);
+                        }
+                    });
+                    setTrades(sortedTrades);
+                })
                 .catch((error) => console.error("Error fetching trades:", error));
         };
         fetchTrades();
-    }, [userId, trades]);
+    }, [userId, trades, sortOrder]);
+
+    const handleChangeSortOrder = (e) => {
+        setSortOrder(e.target.value);
+    };
 
     // event handler for change in form
     const handleChange = (e) => {
@@ -174,6 +188,13 @@ function Trade() {
             </nav>
             {/* trade journal entries */}
             <h1>Trade Journal</h1>
+            <div>
+                Sort:
+                <select value={sortOrder} onChange={handleChangeSortOrder}>
+                    <option value="asc">Oldest to Current</option>
+                    <option value="desc">Current to Oldest</option>
+                </select>
+            </div>
             {trades && trades.length === 0 ? (
                 <p>No trades found.</p>
             ) : (

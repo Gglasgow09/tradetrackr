@@ -21,7 +21,7 @@ function App() {
         <Route path="/users/:userId" component={User} />
         <Route path="/trade/users/:userId" component={Trade} />
         <Route path="/watchlist" component={Watchlist} />
-        <Route path="/overallperformance" component={OverallPerformance} />
+        <Route path="/overallperformance/users/:userId" component={OverallPerformance} />
         <Route path="/site" component={Site} />
         <Route path="/note" component={Note} />
       </Switch>

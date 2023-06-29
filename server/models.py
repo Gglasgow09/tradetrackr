@@ -29,22 +29,6 @@ class User(db.Model):
             raise ValueError("Password must have at least one capital letter")
         return password
 
-
-    # def __repr__(self):
-    #     return f'User {self.username}, ID {self.id}'
-    
-    # @hybrid_property
-    # def password_hash(self):
-    #     return self.password
-
-    # @password_hash.setter
-    # def password_hash(self, password):
-    #     password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
-    #     self.password = password_hash.decode("utf-8")
-
-    # def authenticate(self, password):
-    #     return bcrypt.check_password_hash(self.password_hash, password.encode("utf-8"))
-
     def to_dict(self):
         return {
             "id": self.id,

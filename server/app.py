@@ -6,6 +6,7 @@
 from flask import request, session
 from flask_restful import Resource
 from datetime import datetime
+from flask import jsonify
 # from flask_bcrypt import Bcrypt
 
 
@@ -185,6 +186,31 @@ class TradeResource(Resource):
     
 api.add_resource(TradeResource, '/trade', '/trade/<int:trade_id>', '/trade/users/<int:user_id>', endpoint='trade')
 
+class OverallPerformanceResource(Resource):
+    def get(self, user_id):
+        performances = OverallPerformance.query.filter_by(user_id=user_id).all()
+        if performances:
+            performance_data = [performance.to_dict() for performance in performances]
+            return jsonify(performance_data)
+        return jsonify({'message': 'No overall performances found for the specified user ID'}), 404
+    
+    def put(self, user_id):
+        performances = OverallPerformance.query.get(user_id=user_id).all()
+        if performances:
+            return [performance.to.dict() for performance in performances]
+        return {"message": 'Overall performance not found for the user'}, 404
+    
+    def delete(self, performance_id):
+        performance = OverallPerformance.query.get(performance_id)
+        if performance:
+            db.session.delete(performance)
+            db.session.commit()
+            return {'message': 'Overall performance deleted successfully'}
+        return {'message': 'Overall performance not found'}, 404
+
+api.add_resource(OverallPerformanceResource, '/overallperformance/users/<int:user_id>')
+
+
 class WatchlistId(Resource):
     def get(self, watchlist_id):
         watchlist = Watchlist.query.get(watchlist_id)
@@ -284,33 +310,6 @@ class WatchlistResource(Resource):
 
 api.add_resource(WatchlistResource, '/watchlist', '/watchlist/<int:watchlist_id>')
 
-class OverallPerformance(Resource):
-    def get(self, performance_id):
-        performance = OverallPerformance.query.get(performance_id)
-        if performance:
-            return performance.to_dict()
-        return {'message': 'Overall performance not found'}, 404
-    
-    def put(self, performance_id):
-        performance = OverallPerformance.query.get(performance_id)
-        if performance:
-            data = request.get_json()
-            performance.metric1 = data['metric1']
-            performance.metric2 = data['metric2']
-            performance.metric3 = data['metric3']
-            db.session.commit()
-            return {'message': 'Overall performance updated successfully'}
-        return {'message': 'Overall performance not found'}, 404
-    
-    def delete(self, performance_id):
-        performance = OverallPerformance.query.get(performance_id)
-        if performance:
-            db.session.delete(performance)
-            db.session.commit()
-            return {'message': 'Overall performance deleted successfully'}
-        return {'message': 'Overall performance not found'}, 404
-
-api.add_resource(OverallPerformance, '/overallperformance')
 
 class SiteResource(Resource):
     def get(self, site_id):
