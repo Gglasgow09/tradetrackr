@@ -169,37 +169,41 @@ function Trade() {
     };
 
     return (
-        // navbar for the different links 
-        <div>
-            <nav>
-                <ul>
-                    {/* <li>
-                        <Link to="/watchlist">Watchlist</Link>
-                    </li> */}
-                    <li>
+        <div className="trade-container">
+            <nav className="navbar">
+                <ul className="nav-list">
+                    <li className="nav-item">
+                        <Link to="/">Home</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/watchlist">WatchList</Link>
+                    </li>
+                    <li className="nav-item">
                         <Link to={`/trade/users/${userId}`}>Trade Journal</Link>
                     </li>
-                    <li>
-                        <Link to="/site">Site</Link>
+                    <li className="nav-item">
+                        <Link to="/site">Resources</Link>
                     </li>
-                    <li>
+                    <li className="nav-item">
                         <Link to="/performance">Overall Performance</Link>
                     </li>
                 </ul>
             </nav>
-            {/* trade journal entries */}
-            <h1>Trade Journal</h1>
-            <div>
+
+            <h1 className="trade-heading">Trade Journal</h1>
+
+            <div className="sort-container">
                 Sort:
-                <select value={sortOrder} onChange={handleChangeSortOrder}>
+                <select className="sort-select" value={sortOrder} onChange={handleChangeSortOrder}>
                     <option value="asc">Oldest to Current</option>
                     <option value="desc">Current to Oldest</option>
                 </select>
             </div>
+
             {trades && trades.length === 0 ? (
-                <p>No trades found.</p>
+                <p className="no-trades">No trades found.</p>
             ) : (
-                <table>
+                <table className="trade-table">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -230,21 +234,18 @@ function Trade() {
                                     <td>{trade.pnl}</td>
                                     <td>{trade.notes}</td>
                                     <td>
-                                        <button onClick={() => handleUpdate(trade.id)}>
-                                            Update
-                                        </button>
-                                        <button onClick={() => handleDelete(trade.id)}>
-                                            Delete
-                                        </button>
+                                        <button className='trade-btn' onClick={() => handleUpdate(trade.id)}>Update</button>
+                                        <button className='trade-btn' onClick={() => handleDelete(trade.id)}>Delete</button>
                                     </td>
                                 </tr>
                             ))}
                     </tbody>
                 </table>
             )}
-            {/* if you hit update the form changes to update if not it will be add new */}
-            <h2>{selectedTrade ? "Update Trade" : "Add New Trade"}</h2>
-            <form onSubmit={handleSubmit}>
+
+            <h2 className="form-heading">{selectedTrade ? "Update Trade" : "Add New Trade"}</h2>
+
+            <form className="trade-form" onSubmit={handleSubmit}>
                 <input
                     type="text"
                     name="date"

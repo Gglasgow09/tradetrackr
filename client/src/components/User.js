@@ -47,7 +47,7 @@ const User = ({ onLogout }) => {
                         <Link to={`/performance/users/${userId}`}>Overall Performance</Link>
                     </li>
                     <li>
-                        <button onClick={handleLogout}>Logout</button>
+                        <button className='logout' onClick={handleLogout}>Logout</button>
                     </li>
                 </ul>
             </nav>

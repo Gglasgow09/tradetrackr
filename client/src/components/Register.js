@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import './register.css';
 
-const Register = () => {
+const Register = ({ onRegister }) => {
     const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const history = useHistory();
 
@@ -15,14 +15,13 @@ const Register = () => {
             const response = await fetch("/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, email, password }), // Include 'email' field
             });
             const data = await response.json();
             if (response.ok) {
                 const userId = data.id; // get the userId from the response
-                console.log(userId) // Navigate to the correct route
+                onRegister(); // Call the onRegister function
                 history.push(`/users/${userId}`);
-
             } else {
                 setError(data.message);
             }
@@ -47,21 +46,21 @@ const Register = () => {
                         />
                     </div>
                     <div>
+                        <label htmlFor="email">Email:</label> {/* Update label */}
+                        <input
+                            type="text"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div>
                         <label htmlFor="password">Password:</label>
                         <input
                             type="password"
                             id="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="confirm-password">Confirm Password:</label>
-                        <input
-                            type="password"
-                            id="confirm-password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>
                     <button type="submit">Register</button>

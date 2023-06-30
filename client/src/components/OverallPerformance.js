@@ -75,11 +75,11 @@ function OverallPerformance() {
 
     return (
         <div>
-            <nav>
+            <nav className="navbar">
                 <ul>
-                    {/* <li>
+                    <li>
                         <Link to="/watchlist">Watchlist</Link>
-                    </li> */}
+                    </li>
                     <li>
                         <Link to={`/trade/users/${userId}`}>Trade Journal</Link>
                     </li>
@@ -87,8 +87,11 @@ function OverallPerformance() {
                         <Link to="/site">Site</Link>
                     </li>
                     <li>
-                        <Link to="/performance">Overall Performance</Link>
+                        <Link to={`/performance/users/${userId}`}>Overall Performance</Link>
                     </li>
+                    {/* <li>
+                        <button className='logout' onClick={handleLogout}>Logout</button>
+                    </li> */}
                 </ul>
             </nav>
             <h1>Overall Performance</h1>

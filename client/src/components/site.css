@@ -1,0 +1,43 @@
+.Site {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    margin: 10rem auto;
+    border: 1px solid #ccc;
+    padding: 2rem;
+}
+
+.Site form {
+    width: 50%;
+}
+
+.Site label {
+    margin-bottom: 0.5rem;
+}
+
+.Site input[type="text"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.Site button[type="submit"] {
+    width: 20%;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.Site button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+.favorite-websites {
+    text-align: center;
+    margin-top: 2rem;
+}

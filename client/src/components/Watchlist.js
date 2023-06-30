@@ -1,82 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import './watchlist.css';
 
 const Watchlist = () => {
+    const { userId } = useParams(); // Access the userId from the URL parameter
     const [watchlists, setWatchlists] = useState([]);
     const [watchlistName, setWatchlistName] = useState('');
     const [watchlistItems, setWatchlistItems] = useState('');
+    const [editingWatchlistId, setEditingWatchlistId] = useState(null);
 
-    useEffect(() => {
-        fetchWatchlists();
-    }, []);
-
-    const fetchWatchlists = async () => {
-        try {
-            const response = await fetch('/watchlist');
-            const data = await response.json();
-            setWatchlists(data);
-        } catch (error) {
-            console.error('Error:', error.message);
-        }
-    };
-
-    const handleFormSubmit = async (event) => {
+    const handleFormSubmit = (event) => {
         event.preventDefault();
 
-        const payload = {
-            name: watchlistName,
-            items: watchlistItems.split('\n').filter((item) => item.trim() !== ''),
-        };
-
-        try {
-            const response = await fetch('/watchlist', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
+        if (editingWatchlistId) {
+            // Update existing watchlist
+            const updatedWatchlists = watchlists.map((watchlist) => {
+                if (watchlist.id === editingWatchlistId) {
+                    return {
+                        ...watchlist,
+                        name: watchlistName,
+                        items: watchlistItems.split('\n').filter((item) => item.trim() !== ''),
+                    };
+                }
+                return watchlist;
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to create watchlist');
-            }
+            setWatchlists(updatedWatchlists);
+            setEditingWatchlistId(null);
+        } else {
+            // Create new watchlist
+            const newWatchlist = {
+                id: Date.now(),
+                name: watchlistName,
+                items: watchlistItems.split('\n').filter((item) => item.trim() !== ''),
+            };
 
-            const data = await response.json();
-            console.log(data);
-
-            // Reset form fields
-            setWatchlistName('');
-            setWatchlistItems('');
-
-            // Fetch updated watchlists
-            fetchWatchlists();
-        } catch (error) {
-            console.error('Error:', error.message);
+            setWatchlists([...watchlists, newWatchlist]);
         }
+
+        // Reset form fields
+        setWatchlistName('');
+        setWatchlistItems('');
     };
 
-    const handleDeleteClick = async (watchlistId) => {
-        try {
-            const response = await fetch(`/watchlist/${watchlistId}`, {
-                method: 'DELETE',
-            });
+    const handleEditClick = (watchlistId) => {
+        const watchlistToEdit = watchlists.find((watchlist) => watchlist.id === watchlistId);
+        setWatchlistName(watchlistToEdit.name);
+        setWatchlistItems(watchlistToEdit.items.join('\n'));
+        setEditingWatchlistId(watchlistId);
+    };
 
-            if (!response.ok) {
-                throw new Error('Failed to delete watchlist');
-            }
-
-            const data = await response.json();
-            console.log(data);
-
-            // Fetch updated watchlists
-            fetchWatchlists();
-        } catch (error) {
-            console.error('Error:', error.message);
-        }
+    const handleDeleteClick = (watchlistId) => {
+        const updatedWatchlists = watchlists.filter((watchlist) => watchlist.id !== watchlistId);
+        setWatchlists(updatedWatchlists);
+        setEditingWatchlistId(null);
     };
 
     return (
         <div>
-            <h1>Watchlist</h1>
+            <nav className="navbar">
+                <ul className="nav-list">
+                    <li className="nav-item">
+                        <Link to="/">Home</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/watchlist">WatchList</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to={`/trade/users/${userId}`}>Trade Journal</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/site">Resources</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/performance">Overall Performance</Link>
+                    </li>
+                </ul>
+            </nav>
+            <h1 className="heading">Watchlist</h1>
             <form onSubmit={handleFormSubmit}>
                 <label htmlFor="watchlistName">Watchlist Name:</label>
                 <input
@@ -93,18 +94,21 @@ const Watchlist = () => {
                     onChange={(e) => setWatchlistItems(e.target.value)}
                 />
                 <br />
-                <button type="submit">Create Watchlist</button>
+                <button type="submit">{editingWatchlistId ? 'Update Watchlist' : 'Create Watchlist'}</button>
             </form>
-            <h2>Current Watchlists:</h2>
+            <h2 className="subheading">Current Watchlists:</h2>
             {watchlists.map((watchlist) => (
                 <div key={watchlist.id}>
-                    <h3>{watchlist.name}</h3>
+                    <h3 className='h3'>{watchlist.name}</h3>
                     <ul>
                         {watchlist.items.map((item) => (
-                            <li key={item}>{item}</li>
+                            <li className='li' key={item}>{item}</li>
                         ))}
                     </ul>
-                    <button onClick={() => handleDeleteClick(watchlist.id)}>Delete</button>
+                    <div>
+                        <button onClick={() => handleEditClick(watchlist.id)}>Edit</button>
+                        <button onClick={() => handleDeleteClick(watchlist.id)}>Delete</button>
+                    </div>
                 </div>
             ))}
         </div>
