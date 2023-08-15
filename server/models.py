@@ -1,12 +1,7 @@
-from sqlalchemy.orm import validates
 from enum import Enum
+from sqlalchemy.orm import validates
 from config import db
 # from sqlalchemy.ext.hybrid import hybrid_property
-
-from config import db, bcrypt
-
-
-
 # Models go here!
 
 class User(db.Model):
