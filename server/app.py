@@ -7,7 +7,7 @@ from flask import request, session
 from flask_restful import Resource
 from datetime import datetime
 from flask import jsonify
-# from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 # Local imports
 from config import app, db, api
 from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistItem, Note, Tag, TradeTag
@@ -15,6 +15,12 @@ from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistIt
 # instantiate Bcrypt with app instance
 # bcrypt = Bcrypt(app)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 class UserIdResource(Resource):
     def get(self, user_id):
         user = db.session.get(User, user_id)
