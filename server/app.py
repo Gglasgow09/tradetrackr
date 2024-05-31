@@ -17,14 +17,14 @@ from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistIt
 
 class UserIdResource(Resource):
     def get(self, user_id):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user:
             return user.to_dict()
         return {'message': 'User not found'}, 404
 
     def put(self, user_id):
         # Update user profile
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user:
             data = request.get_json()
             user.username = data['username']
@@ -35,7 +35,7 @@ class UserIdResource(Resource):
         return {'message': 'User not found'}, 404
 
     def delete(self, user_id):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user:
             db.session.delete(user)
             db.session.commit()
@@ -106,7 +106,7 @@ class TradeResource(Resource):
 
         
     def get_trade(self, trade_id):
-        trade = Trade.query.get(trade_id)
+        trade = db.session.get(Trade, trade_id)
         if trade:
             return trade.to_dict()
         return {'message': 'Trade not found'}, 404
@@ -116,7 +116,7 @@ class TradeResource(Resource):
         return [trade.to_dict() for trade in trades]
 
     def patch(self, trade_id):
-        trade = Trade.query.get(trade_id)
+        trade = db.session.get(Trade, trade_id)
         if trade:
             data = request.get_json()
             if 'date' in data:
@@ -172,7 +172,7 @@ class TradeResource(Resource):
         return {'message': 'Trade created successfully'}, 201
 
     def delete(self, trade_id):
-        trade = Trade.query.get(trade_id)
+        trade = db.session.get(Trade, trade_id)
         if trade:
             db.session.delete(trade)
             db.session.commit()
@@ -200,7 +200,7 @@ class OverallPerformanceResource(Resource):
         return {"message": 'Overall performance not found for the user'}, 404
     
     def delete(self, performance_id):
-        performance = OverallPerformance.query.get(performance_id)
+        performance = db.session.get(OverallPerformance, performance_id)
         if performance:
             db.session.delete(performance)
             db.session.commit()
@@ -212,13 +212,13 @@ api.add_resource(OverallPerformanceResource, '/overallperformance/users/<int:use
 
 class WatchlistId(Resource):
     def get(self, watchlist_id):
-        watchlist = Watchlist.query.get(watchlist_id)
+        watchlist = db.session.get(Watchlist, watchlist_id)
         if watchlist:
             return watchlist.to_dict()
         return {'message': 'Watchlist not found'}, 404
     
     def put(self, watchlist_id):
-        watchlist = Watchlist.query.get(watchlist_id)
+        watchlist = db.session.get(Watchlist, watchlist_id)
         if watchlist:
             data = request.get_json()
             watchlist.name = data['name']
@@ -227,13 +227,12 @@ class WatchlistId(Resource):
         return {'message': 'Watchlist not found'}, 404
     
     def delete(self, watchlist_id):
-        watchlist = Watchlist.query.get(watchlist_id)
+        watchlist = db.session.get(Watchlist, watchlist_id)
         if watchlist:
             db.session.delete(watchlist)
             db.session.commit()
             return {'message': 'Watchlist deleted successfully'}
         return {'message': 'Watchlist not found'}, 404
-
 
 class Watchlist(Resource):
     def get(self):
@@ -258,7 +257,7 @@ api.add_resource(Watchlist, '/user/<int:user_id>/watchlist', endpoint='user_watc
 
 class UserWatchlists(Resource):
     def get(self, user_id):
-        user = User.query.get(user_id)
+        user = db.session.get(User, user_id)
         if user:
             watchlists = user.watchlists.all()
             return [watchlist.to_dict() for watchlist in watchlists]
@@ -274,7 +273,7 @@ class WatchlistResource(Resource):
             return self.get_watchlist(watchlist_id)
 
     def get_watchlist(self, watchlist_id):
-        watchlist = Watchlist.query.get(watchlist_id)
+        watchlist = db.session.get(Watchlist, watchlist_id)
         if watchlist:
             return watchlist.to_dict()
         return {'message': 'Watchlist not found'}, 404
@@ -291,7 +290,7 @@ class WatchlistResource(Resource):
         return {'message': 'Watchlist created successfully'}, 201
 
     def put(self, watchlist_id):
-        watchlist = Watchlist.query.get(watchlist_id)
+        watchlist = db.session.get(Watchlist, watchlist_id)
         if watchlist:
             data = request.get_json()
             watchlist.name = data['name']
@@ -300,7 +299,7 @@ class WatchlistResource(Resource):
         return {'message': 'Watchlist not found'}, 404
 
     def delete(self, watchlist_id):
-        watchlist = Watchlist.query.get(watchlist_id)
+        watchlist = db.session.get(Watchlist, watchlist_id)
         if watchlist:
             db.session.delete(watchlist)
             db.session.commit()
@@ -312,13 +311,13 @@ api.add_resource(WatchlistResource, '/watchlist', '/watchlist/<int:watchlist_id>
 
 class SiteResource(Resource):
     def get(self, site_id):
-        site = Site.query.get(site_id)
+        site = db.session.get(Site, site_id)
         if site:
             return site.to_dict()
         return {'message': 'Site not found'}, 404
     
     def put(self, site_id):
-        site = Site.query.get(site_id)
+        site = db.session.get(Site, site_id)
         if site:
             data = request.get_json()
             site.name = data['name']
@@ -328,7 +327,7 @@ class SiteResource(Resource):
         return {'message': 'Site not found'}, 404
     
     def delete(self, site_id):
-        site = Site.query.get(site_id)
+        site = db.session.get(Site, site_id)
         if site:
             db.session.delete(site)
             db.session.commit()
@@ -339,13 +338,13 @@ api.add_resource(SiteResource, '/site/<int:site_id>')
 
 class NoteResource(Resource):
     def get(self, note_id):
-        note = Note.query.get(note_id)
+        note = db.session.get(Note, note_id)
         if note:
             return note.to_dict()
         return {'message': 'Note not found'}, 404
     
     def put(self, note_id):
-        note = Note.query.get(note_id)
+        note = db.session.get(Note, note_id)
         if note:
             data = request.get_json()
             note.title = data['title']
@@ -355,7 +354,7 @@ class NoteResource(Resource):
         return {'message': 'Note not found'}, 404
     
     def delete(self, note_id):
-        note = Note.query.get(note_id)
+        note = db.session.get(Note, note_id)
         if note:
             db.session.delete(note)
             db.session.commit()
@@ -366,13 +365,13 @@ api.add_resource(NoteResource, '/note/<int:note_id>')
 
 class TagResource(Resource):
     def get(self, tag_id):
-        tag = Tag.query.get(tag_id)
+        tag = db.session.get(Tag, tag_id)
         if tag:
             return tag.to_dict()
         return {'message': 'Tag not found'}, 404
     
     def put(self, tag_id):
-        tag = Tag.query.get(tag_id)
+        tag = db.session.get(Tag, tag_id)
         if tag:
             data = request.get_json()
             tag.name = data['name']
@@ -381,7 +380,7 @@ class TagResource(Resource):
         return {'message': 'Tag not found'}, 404
     
     def delete(self, tag_id):
-        tag = Tag.query.get(tag_id)
+        tag = db.session.get(Tag, tag_id)
         if tag:
             db.session.delete(tag)
             db.session.commit()
@@ -392,13 +391,13 @@ api.add_resource(TagResource, '/tag/<int:tag_id>')
 
 class TradeTagResource(Resource):
     def get(self, trade_tag_id):
-        trade_tag = TradeTag.query.get(trade_tag_id)
+        trade_tag = db.session.get(TradeTag, trade_tag_id)
         if trade_tag:
             return trade_tag.to_dict()
         return {'message': 'Trade tag not found'}, 404
     
     def put(self, trade_tag_id):
-        trade_tag = TradeTag.query.get(trade_tag_id)
+        trade_tag = db.session.get(TradeTag, trade_tag_id)
         if trade_tag:
             data = request.get_json()
             trade_tag.trade_id = data['trade_id']
@@ -408,7 +407,7 @@ class TradeTagResource(Resource):
         return {'message': 'Trade tag not found'}, 404
     
     def delete(self, trade_tag_id):
-        trade_tag = TradeTag.query.get(trade_tag_id)
+        trade_tag = db.session.get(TradeTag, trade_tag_id)
         if trade_tag:
             db.session.delete(trade_tag)
             db.session.commit()
@@ -416,10 +415,6 @@ class TradeTagResource(Resource):
         return {'message': 'Trade tag not found'}, 404
 
 api.add_resource(TradeTagResource, '/tradetag/<int:trade_tag_id>')
-
-
-
-
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
