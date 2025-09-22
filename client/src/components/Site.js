@@ -44,7 +44,8 @@ function SiteForm() {
             withdateranges: false,
             compareSymbols: [],
             studies: [],
-            autosize: true,
+            width: "100%",
+            height: "610"
         });
         document.querySelector('.tradingview-widget-container__widget').appendChild(script);
     }, []);
