@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-
-# Standard library imports
-
-# Remote library imports
 from flask import request, session
 from flask_restful import Resource
 from datetime import datetime
@@ -11,9 +7,6 @@ from flask_login import LoginManager
 # Local imports
 from config import app, db, api
 from models import User, Trade, Watchlist, OverallPerformance, Site, WatchlistItem, Note, Tag, TradeTag
-
-# instantiate Bcrypt with app instance
-# bcrypt = Bcrypt(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -47,7 +40,6 @@ class UserIdResource(Resource):
             db.session.commit()
             return {'message': 'User deleted successfully'}
         return {'message': 'User not found'}, 404
-
 
 class UserResource (Resource):
     def post(self):

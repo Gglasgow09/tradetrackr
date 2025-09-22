@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from "react-router-dom";
 import './site.css';
 
@@ -9,8 +9,6 @@ function SiteForm() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Add your logic here to handle the form submission
-        // For example, you can make an API call to store the website in the backend
         console.log('Submitted URL:', url);
         setFavoriteWebsites([...favoriteWebsites, url]);
         setUrl(''); // Clear the input field after submission
@@ -19,6 +17,37 @@ function SiteForm() {
     const handleChange = (event) => {
         setUrl(event.target.value);
     };
+
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+        script.async = true;
+        script.innerHTML = JSON.stringify({
+            allow_symbol_change: true,
+            calendar: false,
+            details: false,
+            hide_side_toolbar: true,
+            hide_top_toolbar: false,
+            hide_legend: false,
+            hide_volume: false,
+            hotlist: false,
+            interval: "D",
+            locale: "en",
+            save_image: true,
+            style: "1",
+            symbol: "NASDAQ:AAPL",
+            theme: "dark",
+            timezone: "Etc/UTC",
+            backgroundColor: "#0F0F0F",
+            gridColor: "rgba(242, 242, 242, 0.06)",
+            watchlist: [],
+            withdateranges: false,
+            compareSymbols: [],
+            studies: [],
+            autosize: true,
+        });
+        document.querySelector('.tradingview-widget-container__widget').appendChild(script);
+    }, []);
 
     return (
         <div>
@@ -41,7 +70,18 @@ function SiteForm() {
                     </li>
                 </ul>
             </nav>
-            <form className='Site' onSubmit={handleSubmit}>
+            <div>
+                <div className="tradingview-widget-container" style={{ height: "100%", width: "100%" }}>
+                    <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
+                    <div className="tradingview-widget-copyright">
+                        <a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener nofollow" target="_blank">
+                            <span className="blue-text">AAPL stock chart</span>
+                        </a>
+                        <span className="trademark"> by TradingView</span>
+                    </div>
+                </div>
+            </div>
+            <form className="Site" onSubmit={handleSubmit}>
                 <label>
                     Website URL:
                     <input type="text" value={url} onChange={handleChange} />

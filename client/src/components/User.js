@@ -6,7 +6,7 @@ const User = ({ onLogout }) => {
     const { userId } = useParams();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
-
+// may be causing the inifinte http get requests to the server, do more research on the issues with useEffect 
     useEffect(() => {
         fetch(`/users/${userId}`)
             .then((response) => response.json())
