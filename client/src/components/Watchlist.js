@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import './watchlist.css';
+import './TradingViewWidget.js';
+
 
 const Watchlist = () => {
     const { userId } = useParams(); // Access the userId from the URL parameter
